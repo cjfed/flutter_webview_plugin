@@ -241,7 +241,6 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
 
     if ([message.name isEqualToString:@"IosMessage"]) {
-        NSLog("拿到了。。。。。。。。。。。");
         [channel invokeMethod:@"onPostMessage" arguments:@{@"postMessage": message.body}];
     }
 }
