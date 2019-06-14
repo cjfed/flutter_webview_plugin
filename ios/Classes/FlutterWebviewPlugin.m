@@ -104,7 +104,10 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
         rc = self.viewController.view.bounds;
     }
 
-    self.webview = [[WKWebView alloc] initWithFrame:rc];
+    WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
+    [config.userContentController addScriptMessageHandler:self name:@"IosMessage"];
+
+    self.webview = [[WKWebView alloc] initWithFrame:rc configuration:config];
     self.webview.navigationDelegate = self;
     self.webview.scrollView.delegate = self;
     self.webview.hidden = [hidden boolValue];
@@ -232,6 +235,15 @@ static NSString *const CHANNEL_NAME = @"flutter_webview_plugin";
 - (void)cleanCookies {
     [[NSURLSession sharedSession] resetWithCompletionHandler:^{
         }];
+}
+
+#pragma mark - WKScriptMessageHandler
+- (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
+
+    if ([message.name isEqualToString:@"IosMessage"]) {
+        NSLog("拿到了。。。。。。。。。。。");
+        [channel invokeMethod:@"onPostMessage" arguments:@{@"postMessage": message.body}];
+    }
 }
 
 #pragma mark -- WkWebView Delegate
